@@ -22,9 +22,9 @@ pub struct Select {
     pub table: &'static str,
     pub output: Vec<Expr>,
     pub join: Vec<Join>,
-    pub filter: Expr,
+    pub filter: Option<Expr>,
     pub group: Vec<Expr>,
-    pub order: Option<Vec<(Expr, Order)>>,
+    pub order: Vec<(Expr, Order)>,
     pub limit: Option<usize>,
 }
 
@@ -51,7 +51,9 @@ impl Buildable for Select {
             je.build(params, out);
         }
         out.push("where".into());
-        self.filter.build(params, out);
+        if let Some(filter) = &self.filter {
+            filter.build(params, out);
+        }
         if self.group.len() > 0 {
             out.push("group by".into());
             for (i, g) in self.group.iter().enumerate() {
@@ -61,9 +63,9 @@ impl Buildable for Select {
                 g.build(params, out);
             }
         }
-        if let Some(o) = &self.order {
+        if self.order.len() > 0 {
             out.push("order by".into());
-            for (i, o) in o.iter().enumerate() {
+            for (i, o) in self.order.iter().enumerate() {
                 if i > 0 {
                     out.push(",".into());
                 }
