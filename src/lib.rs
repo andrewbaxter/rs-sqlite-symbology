@@ -3,6 +3,7 @@ use std::borrow::Cow;
 use enum_dispatch::enum_dispatch;
 use rusqlite::types::ToSqlOutput;
 
+pub mod delete;
 pub mod expr;
 pub mod insert;
 pub mod join;
